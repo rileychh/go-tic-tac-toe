@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 type ticTacToeBoard [3][3]cell
@@ -33,4 +35,38 @@ func (b *ticTacToeBoard) String() string {
 	sb.WriteString(" ╰─┴─┴─╯\n")
 
 	return sb.String()
+}
+
+// Convert "A1" to (0, 0), "C2" to (2, 1), etc.
+func parseCoordinate(coordinate string) (int, int, error) {
+	if len(coordinate) != 2 {
+		return 0, 0, errors.New("invalid coordinate length")
+	}
+
+	column := unicode.ToUpper(rune(coordinate[0]))
+	row := rune(coordinate[1])
+	if !unicode.IsLetter(column) || !unicode.IsDigit(row) {
+		return 0, 0, errors.New("invalid coordinate format")
+	}
+
+	x := int(column - 'A')
+	y := int(row - '0' - 1)
+	if (y >= len(ticTacToeBoard{}) || x >= len(ticTacToeBoard{}[0])) {
+		return 0, 0, errors.New("coordinate out of range")
+	}
+
+	return y, x, nil
+}
+
+func (b *ticTacToeBoard) SetByCoordinate(coordinate string, value cell) error {
+	row, column, err := parseCoordinate(coordinate)
+	if err != nil {
+		return err
+	}
+	if b[row][column] != empty {
+		return errors.New("cell is occupied")
+	}
+
+	b[row][column] = value
+	return nil
 }

@@ -56,6 +56,15 @@ chooseMark:
 	for {
 		if isUserTurn {
 			fmt.Print("It's your turn. Enter a coordinate: ")
+
+			var coordinate string
+			scanlnUntilSuccess(&coordinate)
+			err := board.SetByCoordinate(coordinate, userMark)
+			if err != nil {
+				fmt.Printf("There's a problem with your input: %v.\n"+
+					"Enter a coordinate in the format 'LetterNumber' (e.g., 'B2' is the center of the board).\n", err)
+				continue
+			}
 		} else {
 			fmt.Println("It's the computer's turn.")
 		}
