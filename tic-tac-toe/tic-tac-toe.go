@@ -84,7 +84,19 @@ chooseMark:
 			_ = board.SetByIndex(randomCell, computerMark)
 		}
 
-		isUserTurn = !isUserTurn
 		fmt.Print(&board)
+
+		if winner := board.CheckWin(); winner != empty {
+			fmt.Printf("Game Over. The winner is %v.\n", winner)
+			break
+		}
+
+		// Check for a draw
+		if len(board.GetEmptyCells()) == 0 {
+			fmt.Println("Game Over. It's a draw.")
+			break
+		}
+
+		isUserTurn = !isUserTurn
 	}
 }
