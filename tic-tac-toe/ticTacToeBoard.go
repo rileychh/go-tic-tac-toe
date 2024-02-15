@@ -19,11 +19,11 @@ func (b *ticTacToeBoard) String() string {
 
 	sb.WriteString("  A B C \n")
 	sb.WriteString(" ╭─┬─┬─╮\n")
-	for rowIndex := range b {
-		sb.WriteString(fmt.Sprintf("%d", rowIndex+1))
-		for _, column := range b[rowIndex] {
+	for row := range b {
+		sb.WriteString(fmt.Sprintf("%d", row+1))
+		for column := range b[row] {
 			sb.WriteString("│")
-			switch column {
+			switch b[row][column] {
 			case empty:
 				sb.WriteString(" ")
 			case circle:
@@ -33,7 +33,7 @@ func (b *ticTacToeBoard) String() string {
 			}
 		}
 		sb.WriteString("│\n")
-		if rowIndex != len(b)-1 {
+		if row != len(b)-1 {
 			sb.WriteString(" ├─┼─┼─┤\n")
 		}
 	}
