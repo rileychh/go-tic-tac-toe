@@ -59,12 +59,22 @@ chooseMark:
 
 			var coordinate string
 			scanlnUntilSuccess(&coordinate)
-			err := board.SetByCoordinate(coordinate, userMark)
+			index, err := ParseCoordinate(coordinate)
 			if err != nil {
 				fmt.Printf("There's a problem with your input: %v.\n"+
 					"Enter a coordinate in the format 'LetterNumber' (e.g., 'B2' is the center of the board).\n", err)
 				continue
 			}
+			cellValue, err := board.GetByIndex(index)
+			if err != nil {
+				fmt.Println("Your coordinate is out of range. Input only the coordinates shown on the board.")
+				continue
+			} else if cellValue != empty {
+				fmt.Println("This cell is already marked. Try marking a empty cell.")
+				continue
+			}
+			_ = board.SetByIndex(index, userMark)
+
 		} else {
 			fmt.Println("It's the computer's turn.")
 		}

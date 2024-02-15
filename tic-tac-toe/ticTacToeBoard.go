@@ -9,7 +9,7 @@ import (
 
 type ticTacToeBoard [3][3]cell
 
-type boardIndex struct {
+type BoardIndex struct {
 	row    int
 	column int
 }
@@ -42,38 +42,49 @@ func (b *ticTacToeBoard) String() string {
 	return sb.String()
 }
 
-// Convert "A1" to (0, 0), "C2" to (2, 1), etc.
-func parseCoordinate(coordinate string) (boardIndex, error) {
+func (b *ticTacToeBoard) GetByIndex(index BoardIndex) (cell, error) {
+	row, column := index.row, index.column
+	if (row >= len(ticTacToeBoard{}) || column >= len(ticTacToeBoard{}[0])) {
+		return 0, errors.New("index out of range")
+	}
+
+	return b[row][column], nil
+}
+
+func (b *ticTacToeBoard) SetByIndex(index BoardIndex, value cell) error {
+	row, column := index.row, index.column
+	if (row >= len(ticTacToeBoard{}) || column >= len(ticTacToeBoard{}[0])) {
+		return errors.New("index out of range")
+	}
+
+	b[row][column] = value
+	return nil
+}
+
+// ParseCoordinate Convert "A1" to (0, 0), "C2" to (2, 1), etc.
+func ParseCoordinate(coordinate string) (BoardIndex, error) {
 	if len(coordinate) != 2 {
-		return boardIndex{}, errors.New("invalid coordinate length")
+		return BoardIndex{}, errors.New("invalid coordinate length")
 	}
 
 	letterPart := unicode.ToUpper(rune(coordinate[0]))
 	numberPart := rune(coordinate[1])
 	if !unicode.IsLetter(letterPart) || !unicode.IsDigit(numberPart) {
-		return boardIndex{}, errors.New("invalid coordinate format")
+		return BoardIndex{}, errors.New("invalid coordinate format")
 	}
 
 	column := int(letterPart - 'A')
 	row := int(numberPart - '0' - 1)
-	if (row >= len(ticTacToeBoard{}) || column >= len(ticTacToeBoard{}[0])) {
-		return boardIndex{}, errors.New("coordinate out of range")
-	}
-
-	return boardIndex{row, column}, nil
+	return BoardIndex{row, column}, nil
 }
 
-func (b *ticTacToeBoard) SetByCoordinate(coordinate string, value cell) error {
-	index, err := parseCoordinate(coordinate)
-	if err != nil {
-		return err
+func (b *ticTacToeBoard) GetEmptyCells() (emptyCells []BoardIndex) {
+	for row := range b {
+		for column := range b[row] {
+			if b[row][column] == empty {
+				emptyCells = append(emptyCells, BoardIndex{row, column})
+			}
+		}
 	}
-
-	row, column := index.row, index.column
-	if b[row][column] != empty {
-		return errors.New("cell is occupied")
-	}
-
-	b[row][column] = value
-	return nil
+	return
 }
