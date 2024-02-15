@@ -9,14 +9,19 @@ import (
 
 type ticTacToeBoard [3][3]cell
 
+type boardIndex struct {
+	row    int
+	column int
+}
+
 func (b *ticTacToeBoard) String() string {
 	var sb strings.Builder
 
 	sb.WriteString("  A B C \n")
 	sb.WriteString(" ╭─┬─┬─╮\n")
-	for i, row := range b {
-		sb.WriteString(fmt.Sprintf("%d", i+1))
-		for _, column := range row {
+	for rowIndex := range b {
+		sb.WriteString(fmt.Sprintf("%d", rowIndex+1))
+		for _, column := range b[rowIndex] {
 			sb.WriteString("│")
 			switch column {
 			case empty:
@@ -28,7 +33,7 @@ func (b *ticTacToeBoard) String() string {
 			}
 		}
 		sb.WriteString("│\n")
-		if i != len(b)-1 {
+		if rowIndex != len(b)-1 {
 			sb.WriteString(" ├─┼─┼─┤\n")
 		}
 	}
@@ -38,31 +43,33 @@ func (b *ticTacToeBoard) String() string {
 }
 
 // Convert "A1" to (0, 0), "C2" to (2, 1), etc.
-func parseCoordinate(coordinate string) (int, int, error) {
+func parseCoordinate(coordinate string) (boardIndex, error) {
 	if len(coordinate) != 2 {
-		return 0, 0, errors.New("invalid coordinate length")
+		return boardIndex{}, errors.New("invalid coordinate length")
 	}
 
-	column := unicode.ToUpper(rune(coordinate[0]))
-	row := rune(coordinate[1])
-	if !unicode.IsLetter(column) || !unicode.IsDigit(row) {
-		return 0, 0, errors.New("invalid coordinate format")
+	letterPart := unicode.ToUpper(rune(coordinate[0]))
+	numberPart := rune(coordinate[1])
+	if !unicode.IsLetter(letterPart) || !unicode.IsDigit(numberPart) {
+		return boardIndex{}, errors.New("invalid coordinate format")
 	}
 
-	x := int(column - 'A')
-	y := int(row - '0' - 1)
-	if (y >= len(ticTacToeBoard{}) || x >= len(ticTacToeBoard{}[0])) {
-		return 0, 0, errors.New("coordinate out of range")
+	column := int(letterPart - 'A')
+	row := int(numberPart - '0' - 1)
+	if (row >= len(ticTacToeBoard{}) || column >= len(ticTacToeBoard{}[0])) {
+		return boardIndex{}, errors.New("coordinate out of range")
 	}
 
-	return y, x, nil
+	return boardIndex{row, column}, nil
 }
 
 func (b *ticTacToeBoard) SetByCoordinate(coordinate string, value cell) error {
-	row, column, err := parseCoordinate(coordinate)
+	index, err := parseCoordinate(coordinate)
 	if err != nil {
 		return err
 	}
+
+	row, column := index.row, index.column
 	if b[row][column] != empty {
 		return errors.New("cell is occupied")
 	}
