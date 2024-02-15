@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-type board [3][3]cell
+type ticTacToeBoard [3][3]cell
 
-func (b board) String() string {
+func (b ticTacToeBoard) String() string {
 	var sb strings.Builder
 
 	sb.WriteString("  A B C \n")

@@ -24,7 +24,6 @@ func main() {
 		fmt.Println(" Please try again.")
 	}
 
-	var board board
 	for i, row := range board {
 		for j := range row {
 			if (i*len(row)+j)%2 == 0 {
@@ -35,4 +34,5 @@ func main() {
 		}
 	}
 	fmt.Println(board)
+	var board ticTacToeBoard
 }

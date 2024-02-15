@@ -4,7 +4,7 @@
     <working_directory value="$PROJECT_DIR$" />
     <kind value="FILE" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/tic-tac-toe/tic-tac-toe.go|$PROJECT_DIR$/tic-tac-toe/board.go|$PROJECT_DIR$/tic-tac-toe/cell.go" />
+    <filePath value="$PROJECT_DIR$/tic-tac-toe/tic-tac-toe.go|$PROJECT_DIR$/tic-tac-toe/ticTacToeBoard.go|$PROJECT_DIR$/tic-tac-toe/cell.go" />
     <method v="2" />
   </configuration>
 </component>
