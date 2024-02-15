@@ -1,21 +1,21 @@
-package main
+package tictactoe
 
 type Cell int
 
 // What iota is: https://stackoverflow.com/a/14426447/11631322
 const (
-	empty Cell = iota
-	circle
-	cross
+	Empty Cell = iota
+	Circle
+	Cross
 )
 
 func (c Cell) String() string {
 	switch c {
-	case empty:
+	case Empty:
 		return "empty"
-	case circle:
+	case Circle:
 		return "circle"
-	case cross:
+	case Cross:
 		return "cross"
 	}
 	return ""

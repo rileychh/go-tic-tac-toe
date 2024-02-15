@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"strings"
+	"tic-tac-toe/internal/tictactoe"
 )
 
 func scanlnUntilSuccess(a ...any) (n int) {
@@ -21,7 +22,7 @@ func scanlnUntilSuccess(a ...any) (n int) {
 func main() {
 	fmt.Println("Welcome to the tic-tac-toe game!")
 
-	var userMark, computerMark Cell
+	var userMark, computerMark tictactoe.Cell
 chooseMark:
 	for {
 		fmt.Print("Do you want to play as circle (O) or cross (X)? [O/X] ")
@@ -32,12 +33,12 @@ chooseMark:
 
 		switch userInput {
 		case "O":
-			userMark = circle
-			computerMark = cross
+			userMark = tictactoe.Circle
+			computerMark = tictactoe.Cross
 			break chooseMark
 		case "X":
-			userMark = cross
-			computerMark = circle
+			userMark = tictactoe.Cross
+			computerMark = tictactoe.Circle
 			break chooseMark
 		default:
 			fmt.Println("You entered something I can't understand. Please try again.")
@@ -46,7 +47,7 @@ chooseMark:
 
 	fmt.Printf("You'll be playing as %v, and the computer will play as %v.\n", userMark, computerMark)
 
-	var board TictactoeBoard
+	var board tictactoe.Board
 	var isUserTurn = rand.IntN(2) == 0
 
 	if isUserTurn {
@@ -60,7 +61,7 @@ chooseMark:
 			var coordinate string
 			scanlnUntilSuccess(&coordinate)
 
-			index, err := ParseCoordinate(coordinate)
+			index, err := tictactoe.ParseCoordinate(coordinate)
 			if err != nil {
 				fmt.Printf("There's a problem with your input: %v.\n"+
 					"Enter a coordinate in the format 'LetterNumber' (e.g., 'B2' is the center of the board).\n", err)
@@ -71,7 +72,7 @@ chooseMark:
 			if err != nil {
 				fmt.Println("Your coordinate is out of range. Input only the coordinates shown on the board.")
 				continue
-			} else if cellValue != empty {
+			} else if cellValue != tictactoe.Empty {
 				fmt.Println("This cell is already marked. Try marking a empty cell.")
 				continue
 			}
@@ -86,7 +87,7 @@ chooseMark:
 
 		fmt.Print(&board)
 
-		if winner := board.CheckWin(); winner != empty {
+		if winner := board.CheckWin(); winner != tictactoe.Empty {
 			fmt.Printf("Game Over. The winner is %v.\n", winner)
 			break
 		}
