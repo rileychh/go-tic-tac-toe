@@ -20,7 +20,7 @@ cd go-tic-tac-toe
 3. Run the game
 
 ```bash
-go run *.go
+go run .
 ```
 
 ## Game Rules
