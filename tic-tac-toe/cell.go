@@ -12,11 +12,11 @@ const (
 func (c cell) String() string {
 	switch c {
 	case empty:
-		return "Empty"
+		return "empty"
 	case circle:
-		return "Circle"
+		return "circle"
 	case cross:
-		return "Cross"
+		return "cross"
 	}
 	return ""
 }
