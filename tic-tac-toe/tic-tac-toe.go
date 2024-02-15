@@ -49,7 +49,7 @@ chooseMark:
 	var board ticTacToeBoard
 	var isUserTurn = rand.IntN(2) == 0
 
-	fmt.Print(board)
+		fmt.Print(&board)
 	for {
 		if isUserTurn {
 			fmt.Print("It's your turn. Enter a coordinate: ")
@@ -58,6 +58,6 @@ chooseMark:
 		}
 
 		isUserTurn = !isUserTurn
-		fmt.Print(board)
+		fmt.Print(&board)
 	}
 }

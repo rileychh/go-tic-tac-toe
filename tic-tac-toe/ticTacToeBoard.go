@@ -7,7 +7,7 @@ import (
 
 type ticTacToeBoard [3][3]cell
 
-func (b ticTacToeBoard) String() string {
+func (b *ticTacToeBoard) String() string {
 	var sb strings.Builder
 
 	sb.WriteString("  A B C \n")
