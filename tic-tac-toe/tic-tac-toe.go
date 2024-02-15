@@ -13,7 +13,7 @@ func scanlnUntilSuccess(a ...any) (n int) {
 		if err == nil {
 			break
 		}
-		fmt.Printf("Looks like there's an problem getting your input: %v. Please try again.", err)
+		fmt.Printf("Looks like there's an problem getting your input: %v. Please try again.\n", err)
 	}
 	return n
 }
