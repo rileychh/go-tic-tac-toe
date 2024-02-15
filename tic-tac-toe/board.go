@@ -5,17 +5,7 @@ import (
 	"strings"
 )
 
-type (
-	cell  int
-	board [3][3]cell
-)
-
-// What iota is: https://stackoverflow.com/a/14426447/11631322
-const (
-	empty cell = iota
-	circle
-	cross
-)
+type board [3][3]cell
 
 func (b board) String() string {
 	var sb strings.Builder
