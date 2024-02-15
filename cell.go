@@ -1,15 +1,15 @@
 package main
 
-type cell int
+type Cell int
 
 // What iota is: https://stackoverflow.com/a/14426447/11631322
 const (
-	empty cell = iota
+	empty Cell = iota
 	circle
 	cross
 )
 
-func (c cell) String() string {
+func (c Cell) String() string {
 	switch c {
 	case empty:
 		return "empty"

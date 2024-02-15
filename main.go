@@ -21,7 +21,7 @@ func scanlnUntilSuccess(a ...any) (n int) {
 func main() {
 	fmt.Println("Welcome to the tic-tac-toe game!")
 
-	var userMark, computerMark cell
+	var userMark, computerMark Cell
 chooseMark:
 	for {
 		fmt.Print("Do you want to play as circle (O) or cross (X)? [O/X] ")
@@ -46,7 +46,7 @@ chooseMark:
 
 	fmt.Printf("You'll be playing as %v, and the computer will play as %v.\n", userMark, computerMark)
 
-	var board ticTacToeBoard
+	var board TictactoeBoard
 	var isUserTurn = rand.IntN(2) == 0
 
 	if isUserTurn {
