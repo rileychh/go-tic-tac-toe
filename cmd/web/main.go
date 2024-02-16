@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"math/rand/v2"
@@ -118,7 +119,9 @@ func main() {
 	http.HandleFunc("/mark", game.mark)
 	http.HandleFunc("/reset", game.reset)
 
-	err := http.ListenAndServe(":9090", nil)
+	addr := "127.0.0.1:9090"
+	fmt.Printf("Open http://%s in your brower to play the game!", addr)
+	err := http.ListenAndServe(addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
