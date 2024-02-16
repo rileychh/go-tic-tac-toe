@@ -11,29 +11,48 @@
             align-items: center;
             font-family: sans-serif;
         }
+
+        .tic-tac-toe {
+            --border: 0.125rem solid darkgray;
+            border-collapse: collapse;
+        }
+
+        .tic-tac-toe th, .tic-tac-toe td {
+            width: 2rem;
+            height: 2rem;
+            text-align: center;
+        }
+
+        .row ~ .row .cell {
+            border-top: var(--border);
+        }
+
+        .cell ~ .cell {
+            border-left: var(--border);
+        }
     </style>
 </head>
 <body>
 <h1>Tic-tac-toe</h1>
 
-<table class="tic-tac-toe-table">
+<table class="tic-tac-toe">
     <tr>
-	<th></th>
-	<th>A</th>
-	<th>B</th>
-	<th>C</th>
+        <td></td>
+        {{range $index, $ := .Board}}
+            <th>{{add $index 1}}</th>
+        {{end}}
     </tr>
     {{range $index, $ := .Board}}
-	<tr>
-	    <th>{{$index}}</th>
+        <tr class="row">
+            <th>{{add $index 1}}</th>
             {{range .}}
-		<td>
-                    {{.Display}}
-		</td>
+                <td class="cell {{if eq . Empty}}empty{{end}}">
+                    {{cell .}}
+                </td>
             {{end}}
-	</tr>
+            <td></td>
+        </tr>
     {{end}}
 </table>
-
 </body>
 </html>
