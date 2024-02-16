@@ -29,6 +29,24 @@ func renderCell(c tictactoe.Cell) string {
 	return ""
 }
 
+func (game *Game) writeBoard(writer http.ResponseWriter) {
+	t, err := template.
+		New("board.gohtml").
+		Funcs(game.funcMap).
+		ParseFiles("web/board.gohtml")
+	if err != nil {
+		log.Println("template.ParseFiles:", err)
+		writer.WriteHeader(500)
+		return
+	}
+
+	err = t.Execute(writer, Page{&game.board})
+	if err != nil {
+		log.Println("t.Execute:", err)
+		writer.WriteHeader(500)
+	}
+}
+
 func (game *Game) index(writer http.ResponseWriter, request *http.Request) {
 	t, err := template.
 		New("index.gohtml").
@@ -65,22 +83,13 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 
 	_ = game.board.SetByIndex(index, game.userMark)
 
-	// Render the updated board
-	t, err := template.
-		New("board.gohtml").
-		Funcs(game.funcMap).
-		ParseFiles("web/board.gohtml")
-	if err != nil {
-		log.Println("template.ParseFiles:", err)
-		writer.WriteHeader(500)
-		return
-	}
+	// Render and write the updated board
+	game.writeBoard(writer)
+}
 
-	err = t.Execute(writer, Page{&game.board})
-	if err != nil {
-		log.Println("t.Execute:", err)
-		writer.WriteHeader(500)
-	}
+func (game *Game) reset(writer http.ResponseWriter, request *http.Request) {
+	game.board = tictactoe.Board{}
+	game.writeBoard(writer)
 }
 
 func main() {
@@ -101,6 +110,7 @@ func main() {
 
 	http.HandleFunc("/", game.index)
 	http.HandleFunc("/mark", game.mark)
+	http.HandleFunc("/reset", game.reset)
 
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {

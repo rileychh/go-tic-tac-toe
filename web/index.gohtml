@@ -19,5 +19,11 @@
 <body>
 <h1>Tic-tac-toe</h1>
 {{template "board.gohtml" .}}
+<button
+        hx-post="/reset"
+        hx-swap="outerHTML"
+        hx-target="#board"
+>Reset
+</button>
 </body>
 </html>
