@@ -18,9 +18,10 @@
         }
 
         .tic-tac-toe th, .tic-tac-toe td {
-            width: 2rem;
-            height: 2rem;
+            width: 4rem;
+            height: 4rem;
             text-align: center;
+            font-size: 2rem;
         }
 
         .row ~ .row .cell {
@@ -29,6 +30,16 @@
 
         .cell ~ .cell {
             border-left: var(--border);
+        }
+
+        .cell button {
+            display: block;
+            width: 100%;
+        }
+
+        .empty:hover {
+            background-color: lightgray;
+            transition: 300ms;
         }
     </style>
 </head>
