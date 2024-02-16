@@ -8,7 +8,7 @@ import (
 )
 
 type Page struct {
-	Board tictactoe.Board
+	Board *tictactoe.Board
 }
 
 func renderCell(c tictactoe.Cell) string {
@@ -36,7 +36,7 @@ func main() {
 			return tictactoe.Empty
 		},
 	}
-	page := Page{board}
+	page := Page{&board}
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		t, err := template.
