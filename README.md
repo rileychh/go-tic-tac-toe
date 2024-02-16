@@ -1,7 +1,7 @@
 # Go Tic-Tac-Toe
 
-This project is a command-line based Tic-Tac-Toe game implemented in Go. It features both user and computer players with
-a random turn order.
+This project is a Tic-Tac-Toe game implemented in Go. It features both user and computer players with
+a random turn order. You can play the game in the command line or in a web browser.
 
 ## Getting Started
 
@@ -20,7 +20,11 @@ cd go-tic-tac-toe
 3. Run the game
 
 ```bash
-go run .
+# CLI version
+go run cmd/cli/*
+
+# Web version
+go run cmd/web/*
 ```
 
 ## Game Rules
