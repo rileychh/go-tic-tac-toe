@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"tic-tac-toe/internal/tictactoe"
 )
@@ -82,6 +83,16 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	_ = game.board.SetByIndex(index, game.userMark)
+
+	emptyCells := game.board.GetEmptyCells()
+	if len(emptyCells) != 0 {
+		index := emptyCells[rand.IntN(len(emptyCells))]
+		computerMark := tictactoe.Circle
+		if game.userMark == tictactoe.Circle {
+			computerMark = tictactoe.Cross
+		}
+		_ = game.board.SetByIndex(index, computerMark)
+	}
 
 	// Render and write the updated board
 	game.writeBoard(writer)
