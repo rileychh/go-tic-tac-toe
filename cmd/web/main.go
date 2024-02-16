@@ -18,7 +18,7 @@ type Game struct {
 	funcMap  template.FuncMap
 }
 
-func (game *Game) index(writer http.ResponseWriter, request *http.Request) {
+func (game *Game) index(writer http.ResponseWriter, _ *http.Request) {
 	t, err := template.
 		New("index.gohtml").
 		Funcs(game.funcMap).
@@ -79,7 +79,7 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 	game.writeBoard(writer)
 }
 
-func (game *Game) reset(writer http.ResponseWriter, request *http.Request) {
+func (game *Game) reset(writer http.ResponseWriter, _ *http.Request) {
 	game.board = tictactoe.Board{}
 	game.writeBoard(writer)
 }
