@@ -25,6 +25,10 @@
             width: 100%;
         }
 
+        .cell {
+            user-select: none;
+        }
+
         .empty:hover {
             background-color: lightgray;
             transition: 300ms;
@@ -44,9 +48,11 @@
                         {{/* Set ID to coordinate. e.g., B2 */}}
                         id="{{printf "%c" (add $column 'A')}}{{add $row 1}}"
                         class="cell {{if eq . Empty}}empty{{end}}"
-                        hx-post="/mark"
-                        hx-swap="outerHTML"
-                        hx-target="#board"
+                        {{if eq . Empty}}
+                            hx-post="/mark"
+                            hx-swap="outerHTML"
+                            hx-target="#board"
+                        {{end}}
                 >
                     {{renderCell .}}
                 </td>
