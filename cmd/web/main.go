@@ -18,36 +18,6 @@ type Game struct {
 	funcMap  template.FuncMap
 }
 
-func renderCell(c tictactoe.Cell) string {
-	switch c {
-	case tictactoe.Empty:
-		return " "
-	case tictactoe.Circle:
-		return "O"
-	case tictactoe.Cross:
-		return "X"
-	}
-	return ""
-}
-
-func (game *Game) writeBoard(writer http.ResponseWriter) {
-	t, err := template.
-		New("board.gohtml").
-		Funcs(game.funcMap).
-		ParseFiles("web/board.gohtml")
-	if err != nil {
-		log.Println("template.ParseFiles:", err)
-		writer.WriteHeader(500)
-		return
-	}
-
-	err = t.Execute(writer, Page{&game.board})
-	if err != nil {
-		log.Println("t.Execute:", err)
-		writer.WriteHeader(500)
-	}
-}
-
 func (game *Game) index(writer http.ResponseWriter, request *http.Request) {
 	t, err := template.
 		New("index.gohtml").
@@ -82,17 +52,28 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_ = game.board.SetByIndex(index, game.userMark)
+	// Mark and check if the user won
+	_ = game.board.SetByIndex(index, game.userMark) // won't error: index was checked in GetByIndex
+	game.checkAndEnd(writer)
 
+	// Check if the board is full
 	emptyCells := game.board.GetEmptyCells()
-	if len(emptyCells) != 0 {
-		index := emptyCells[rand.IntN(len(emptyCells))]
-		computerMark := tictactoe.Circle
-		if game.userMark == tictactoe.Circle {
-			computerMark = tictactoe.Cross
-		}
-		_ = game.board.SetByIndex(index, computerMark)
+	if len(emptyCells) == 0 {
+		alert(writer, "Game Over. It's a draw.")
+		game.reset(writer, request)
+		return
 	}
+
+	// Set the index and mark for the computer
+	index = emptyCells[rand.IntN(len(emptyCells))]
+	computerMark := tictactoe.Circle
+	if game.userMark == tictactoe.Circle {
+		computerMark = tictactoe.Cross
+	}
+
+	// Mark and check if the computer won
+	_ = game.board.SetByIndex(index, computerMark) // won't error: index is from GetEmptyCells
+	game.checkAndEnd(writer)
 
 	// Render and write the updated board
 	game.writeBoard(writer)
@@ -108,7 +89,17 @@ func main() {
 		"add": func(a, b int) int {
 			return a + b
 		},
-		"renderCell": renderCell,
+		"renderCell": func(c tictactoe.Cell) string {
+			switch c {
+			case tictactoe.Empty:
+				return " "
+			case tictactoe.Circle:
+				return "O"
+			case tictactoe.Cross:
+				return "X"
+			}
+			return ""
+		},
 		"Empty": func() tictactoe.Cell {
 			return tictactoe.Empty
 		},
