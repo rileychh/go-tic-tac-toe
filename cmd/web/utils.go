@@ -9,7 +9,7 @@ import (
 )
 
 func alert(writer http.ResponseWriter, message string) {
-	_, err := writer.Write([]byte(`<script>alert("` + message + `")</message>`))
+	_, err := writer.Write([]byte(`<script>alert("` + message + `")</script>`))
 	if err != nil {
 		log.Println("alert: Write:", err)
 	}
@@ -33,11 +33,12 @@ func (game *Game) writeBoard(writer http.ResponseWriter) {
 	}
 }
 
-func (game *Game) checkAndEnd(writer http.ResponseWriter) {
+func (game *Game) checkAndEnd(writer http.ResponseWriter) bool {
 	if winner := game.board.CheckWin(); winner != tictactoe.Empty {
 		script := fmt.Sprintf("Game Over. The winner is %v.", winner)
 		alert(writer, script)
 		game.reset(writer, nil)
-		return
+		return true
 	}
+	return false
 }

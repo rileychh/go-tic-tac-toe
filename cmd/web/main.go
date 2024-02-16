@@ -54,7 +54,9 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 
 	// Mark and check if the user won
 	_ = game.board.SetByIndex(index, game.userMark) // won't error: index was checked in GetByIndex
-	game.checkAndEnd(writer)
+	if game.checkAndEnd(writer) {
+		return
+	}
 
 	// Check if the board is full
 	emptyCells := game.board.GetEmptyCells()
@@ -73,7 +75,9 @@ func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
 
 	// Mark and check if the computer won
 	_ = game.board.SetByIndex(index, computerMark) // won't error: index is from GetEmptyCells
-	game.checkAndEnd(writer)
+	if game.checkAndEnd(writer) {
+		return
+	}
 
 	// Render and write the updated board
 	game.writeBoard(writer)
