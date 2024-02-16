@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Tic-tac-toe</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"
+            integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+            crossorigin="anonymous"></script>
     <style>
         body {
             display: flex;
@@ -50,15 +53,20 @@
     <tr>
         <td></td>
         {{range $index, $ := .Board}}
-            <th>{{add $index 1}}</th>
+            <th>{{printf "%c" (add $index 'A')}}</th>
         {{end}}
     </tr>
-    {{range $index, $ := .Board}}
+    {{range $row, $ := .Board}}
         <tr class="row">
-            <th>{{add $index 1}}</th>
-            {{range .}}
-                <td class="cell {{if eq . Empty}}empty{{end}}">
-                    {{cell .}}
+            <th>{{add $row 1}}</th>
+            {{range $column, $ := .}}
+                <td
+                        {{/* Set ID to coordinate. e.g., B2 */}}
+                        id="{{printf "%c" (add $row 'A')}}{{add $column 1}}"
+                        class="cell {{if eq . Empty}}empty{{end}}"
+                        hx-post="/mark"
+                >
+                    {{renderCell .}}
                 </td>
             {{end}}
             <td></td>

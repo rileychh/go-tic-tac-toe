@@ -11,34 +11,27 @@ type Page struct {
 	Board tictactoe.Board
 }
 
+func renderCell(c tictactoe.Cell) string {
+	switch c {
+	case tictactoe.Empty:
+		return " "
+	case tictactoe.Circle:
+		return "O"
+	case tictactoe.Cross:
+		return "X"
+	}
+	return ""
+}
+
 func main() {
 	board := tictactoe.Board{}
-	for row := range board {
-		for col := range board[row] {
-			if (row*len(board)+col)%2 == 0 {
-				board[row][col] = tictactoe.Circle
-			} else {
-				board[row][col] = tictactoe.Cross
-			}
-		}
-	}
-	board[1][1] = tictactoe.Empty
+	userMark := tictactoe.Circle
 
 	funcMap := template.FuncMap{
 		"add": func(a, b int) int {
 			return a + b
 		},
-		"cell": func(c tictactoe.Cell) string {
-			switch c {
-			case tictactoe.Empty:
-				return " "
-			case tictactoe.Circle:
-				return "O"
-			case tictactoe.Cross:
-				return "X"
-			}
-			return ""
-		},
+		"renderCell": renderCell,
 		"Empty": func() tictactoe.Cell {
 			return tictactoe.Empty
 		},
@@ -59,6 +52,34 @@ func main() {
 		if err != nil {
 			log.Println("t.Execute: ", err)
 			writer.WriteHeader(500)
+		}
+	})
+
+	http.HandleFunc("/mark", func(writer http.ResponseWriter, request *http.Request) {
+		// Parse the ID of the cell
+		cellId := request.Header.Get("HX-Target")
+		index, err := tictactoe.ParseCoordinate(cellId)
+		if err != nil {
+			log.Println("/mark: ParseCoordinate: ", err)
+			writer.WriteHeader(403)
+			return
+		}
+
+		// Check if cell is in range and empty
+		cell, err := board.GetByIndex(index)
+		if err != nil || cell != tictactoe.Empty {
+			writer.WriteHeader(403)
+			return
+		}
+
+		_ = board.SetByIndex(index, userMark)
+
+		// Write the rendered cell
+		_, err = writer.Write([]byte(renderCell(userMark)))
+		if err != nil {
+			log.Println("/mark: writer.Write: ", err)
+			writer.WriteHeader(500)
+			return
 		}
 	})
 
