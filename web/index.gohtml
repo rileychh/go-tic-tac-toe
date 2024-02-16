@@ -1,0 +1,39 @@
+{{- /*gotype: tic-tac-toe/cmd/web.Page*/ -}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic-tac-toe</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+<h1>Tic-tac-toe</h1>
+
+<table class="tic-tac-toe-table">
+    <tr>
+	<th></th>
+	<th>A</th>
+	<th>B</th>
+	<th>C</th>
+    </tr>
+    {{range $index, $ := .Board}}
+	<tr>
+	    <th>{{$index}}</th>
+            {{range .}}
+		<td>
+                    {{.Display}}
+		</td>
+            {{end}}
+	</tr>
+    {{end}}
+</table>
+
+</body>
+</html>

@@ -20,3 +20,15 @@ func (c Cell) String() string {
 	}
 	return ""
 }
+
+func (c Cell) Display() string {
+	switch c {
+	case Empty:
+		return " "
+	case Circle:
+		return "O"
+	case Cross:
+		return "X"
+	}
+	return ""
+}
