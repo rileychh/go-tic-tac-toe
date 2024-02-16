@@ -1,11 +1,11 @@
-<table id="tic-tac-toe">
+<table id="board">
     <style>
-        #tic-tac-toe {
+        #board {
             --border: 0.125rem solid darkgray;
             border-collapse: collapse;
         }
 
-        #tic-tac-toe th, #tic-tac-toe td {
+        #board th, #board td {
             width: 4rem;
             height: 4rem;
             text-align: center;
@@ -46,7 +46,7 @@
                         class="cell {{if eq . Empty}}empty{{end}}"
                         hx-post="/mark"
                         hx-swap="outerHTML"
-                        hx-target="#tic-tac-toe"
+                        hx-target="#board"
                 >
                     {{renderCell .}}
                 </td>
