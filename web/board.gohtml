@@ -1,0 +1,57 @@
+<table id="tic-tac-toe">
+    <style>
+        #tic-tac-toe {
+            --border: 0.125rem solid darkgray;
+            border-collapse: collapse;
+        }
+
+        #tic-tac-toe th, #tic-tac-toe td {
+            width: 4rem;
+            height: 4rem;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .row ~ .row .cell {
+            border-top: var(--border);
+        }
+
+        .cell ~ .cell {
+            border-left: var(--border);
+        }
+
+        .cell button {
+            display: block;
+            width: 100%;
+        }
+
+        .empty:hover {
+            background-color: lightgray;
+            transition: 300ms;
+        }
+    </style>
+    <tr>
+        <td></td>
+        {{range $index, $ := .Board}}
+            <th>{{printf "%c" (add $index 'A')}}</th>
+        {{end}}
+    </tr>
+    {{range $row, $ := .Board}}
+        <tr class="row">
+            <th>{{add $row 1}}</th>
+            {{range $column, $ := .}}
+                <td
+                        {{/* Set ID to coordinate. e.g., B2 */}}
+                        id="{{printf "%c" (add $column 'A')}}{{add $row 1}}"
+                        class="cell {{if eq . Empty}}empty{{end}}"
+                        hx-post="/mark"
+                        hx-swap="outerHTML"
+                        hx-target="#tic-tac-toe"
+                >
+                    {{renderCell .}}
+                </td>
+            {{end}}
+            <td></td>
+        </tr>
+    {{end}}
+</table>
