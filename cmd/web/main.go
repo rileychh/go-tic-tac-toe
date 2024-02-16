@@ -11,6 +11,12 @@ type Page struct {
 	Board *tictactoe.Board
 }
 
+type Game struct {
+	board    tictactoe.Board
+	userMark tictactoe.Cell
+	funcMap  template.FuncMap
+}
+
 func renderCell(c tictactoe.Cell) string {
 	switch c {
 	case tictactoe.Empty:
@@ -23,10 +29,61 @@ func renderCell(c tictactoe.Cell) string {
 	return ""
 }
 
-func main() {
-	board := tictactoe.Board{}
-	userMark := tictactoe.Circle
+func (game *Game) index(writer http.ResponseWriter, request *http.Request) {
+	t, err := template.
+		New("index.gohtml").
+		Funcs(game.funcMap).
+		ParseFiles("web/index.gohtml", "web/board.gohtml")
+	if err != nil {
+		log.Println("template.ParseFiles:", err)
+		writer.WriteHeader(500)
+	}
 
+	err = t.Execute(writer, Page{&game.board})
+	if err != nil {
+		log.Println("t.Execute: ", err)
+		writer.WriteHeader(500)
+	}
+}
+
+func (game *Game) mark(writer http.ResponseWriter, request *http.Request) {
+	// Parse the ID of the cell
+	cellId := request.Header.Get("HX-Trigger")
+	index, err := tictactoe.ParseCoordinate(cellId)
+	if err != nil {
+		log.Println("/mark: ParseCoordinate:", err)
+		writer.WriteHeader(400)
+		return
+	}
+
+	// Check if cell is in range and empty
+	cell, err := game.board.GetByIndex(index)
+	if err != nil || cell != tictactoe.Empty {
+		writer.WriteHeader(400)
+		return
+	}
+
+	_ = game.board.SetByIndex(index, game.userMark)
+
+	// Render the updated board
+	t, err := template.
+		New("board.gohtml").
+		Funcs(game.funcMap).
+		ParseFiles("web/board.gohtml")
+	if err != nil {
+		log.Println("template.ParseFiles:", err)
+		writer.WriteHeader(500)
+		return
+	}
+
+	err = t.Execute(writer, Page{&game.board})
+	if err != nil {
+		log.Println("t.Execute:", err)
+		writer.WriteHeader(500)
+	}
+}
+
+func main() {
 	funcMap := template.FuncMap{
 		"add": func(a, b int) int {
 			return a + b
@@ -36,61 +93,14 @@ func main() {
 			return tictactoe.Empty
 		},
 	}
-	page := Page{&board}
+	game := Game{
+		tictactoe.Board{},
+		tictactoe.Circle,
+		funcMap,
+	}
 
-	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		t, err := template.
-			New("index.gohtml").
-			Funcs(funcMap).
-			ParseFiles("web/index.gohtml", "web/board.gohtml")
-		if err != nil {
-			log.Println("template.ParseFiles:", err)
-			writer.WriteHeader(500)
-		}
-
-		err = t.Execute(writer, page)
-		if err != nil {
-			log.Println("t.Execute: ", err)
-			writer.WriteHeader(500)
-		}
-	})
-
-	http.HandleFunc("/mark", func(writer http.ResponseWriter, request *http.Request) {
-		// Parse the ID of the cell
-		cellId := request.Header.Get("HX-Trigger")
-		index, err := tictactoe.ParseCoordinate(cellId)
-		if err != nil {
-			log.Println("/mark: ParseCoordinate:", err)
-			writer.WriteHeader(400)
-			return
-		}
-
-		// Check if cell is in range and empty
-		cell, err := board.GetByIndex(index)
-		if err != nil || cell != tictactoe.Empty {
-			writer.WriteHeader(400)
-			return
-		}
-
-		_ = board.SetByIndex(index, userMark)
-
-		// Render the updated board
-		t, err := template.
-			New("board.gohtml").
-			Funcs(funcMap).
-			ParseFiles("web/board.gohtml")
-		if err != nil {
-			log.Println("template.ParseFiles:", err)
-			writer.WriteHeader(500)
-			return
-		}
-
-		err = t.Execute(writer, page)
-		if err != nil {
-			log.Println("t.Execute:", err)
-			writer.WriteHeader(500)
-		}
-	})
+	http.HandleFunc("/", game.index)
+	http.HandleFunc("/mark", game.mark)
 
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
