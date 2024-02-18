@@ -26,6 +26,7 @@ func (game *Game) writeBoard(writer http.ResponseWriter) {
 		return
 	}
 
+	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	err = t.Execute(writer, Page{&game.board})
 	if err != nil {
 		log.Println("t.Execute:", err)

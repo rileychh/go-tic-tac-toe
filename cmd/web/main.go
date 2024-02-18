@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/css"
+	"github.com/tdewolff/minify/v2/html"
+	"github.com/tdewolff/minify/v2/js"
 	"html/template"
 	"log"
 	"math/rand/v2"
 	"net/http"
+	"regexp"
 	"tic-tac-toe/internal/tictactoe"
 )
 
@@ -29,6 +34,7 @@ func (game *Game) index(writer http.ResponseWriter, _ *http.Request) {
 		writer.WriteHeader(500)
 	}
 
+	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	err = t.Execute(writer, Page{&game.board})
 	if err != nil {
 		log.Println("t.Execute: ", err)
@@ -115,14 +121,16 @@ func main() {
 		funcMap,
 	}
 
-	http.HandleFunc("/", game.index)
-	http.HandleFunc("/mark", game.mark)
-	http.HandleFunc("/reset", game.reset)
+	m := minify.New()
+	m.AddFunc("text/html", html.Minify)
+	m.AddFunc("text/css", css.Minify)
+	m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
 
-	addr := "127.0.0.1:9090"
-	fmt.Printf("Open http://%s in your brower to play the game!", addr)
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
+	http.Handle("/", m.Middleware(http.HandlerFunc(game.index)))
+	http.Handle("/mark", m.Middleware(http.HandlerFunc(game.mark)))
+	http.Handle("/reset", m.Middleware(http.HandlerFunc(game.reset)))
+
+	addr := ":9090"
+	fmt.Printf("Open http://127.0.0.1%s in your brower to play the game!", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
